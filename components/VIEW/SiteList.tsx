@@ -82,7 +82,7 @@ export default function SiteList() {
 
         <table className="table text-center">
           <thead>
-            <tr>
+            <tr className="">
               <th></th>
               <th>SITE_ID</th>
               <th>SITE NAME</th>
@@ -107,7 +107,7 @@ export default function SiteList() {
               </tr>
             ) : data.length > 0 ? (
               data?.map((site: any, index: any) => (
-                <tr className="text-xs" key={index}>
+                <tr key={index}>
                   <th>{index + 1}</th>
                   <td>{site.site_id}</td>
                   <td>{site.site_name}</td>
@@ -131,11 +131,7 @@ export default function SiteList() {
                       href={`/dashboard/sites/edit/${site.site_id}`}
                       className=""
                     >
-                      <View
-                        size={30}
-                        strokeWidth={3}
-                        className="text-secondary"
-                      />
+                      <View size={30} strokeWidth={1} />
                     </Link>
                   </td>
                 </tr>
