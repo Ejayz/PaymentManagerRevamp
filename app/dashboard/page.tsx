@@ -5,8 +5,8 @@ import LoginForm from "@/components/VIEW/LoginForm";
 
 export default function Home() {
   return (
-    <DashboardNavigation cssStyle="" children={undefined}>
-      
+    <DashboardNavigation cssStyle="" >
+      <></>
     </DashboardNavigation>
   );
 }
