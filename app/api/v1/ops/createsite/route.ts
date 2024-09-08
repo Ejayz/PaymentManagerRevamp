@@ -28,7 +28,7 @@ const id= supabase.auth.getUserIdentities()
       { status: 400 }
     );
   } else {
-    const { data, error } = await supabase.from("tbl_site").insert([
+    const data = await supabase.from("tbl_site").insert([
       {
         site_name: site_name,
         site_link: site_link,
@@ -38,12 +38,14 @@ const id= supabase.auth.getUserIdentities()
         user_id: user?.data?.user?.id
       },
     ]);
-    console.log(data,error)
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
-    }
-    return NextResponse.json(data, {
+    console.log(data)
+    if (data.error) {
+      return NextResponse.json({ error: data.error.message }, { status: 400 });
+    }else{
+        return NextResponse.json(data, {
       status: 200,
-    });
+    });  
+    }
+
   }
 }

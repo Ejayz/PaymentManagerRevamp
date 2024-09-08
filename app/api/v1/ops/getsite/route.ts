@@ -6,33 +6,23 @@ const PROJECT_URL = process.env.PROJECT_URL || "";
 const ANON_PUBLIC = process.env.ANON_PUBLIC || "";
 
 export async function GET(req: NextRequest) {
-  const page = req.nextUrl.searchParams.get("page") || "0";
-  const limit = req.nextUrl.searchParams.get("limit") || "10";
-  const search = req.nextUrl.searchParams.get("search");
-
   const supabase = createClient(PROJECT_URL, ANON_PUBLIC);
 
+  const site_id = req.nextUrl.searchParams.get("site_id");
+
   const auth = cookies().get("auth");
+
   const user = await supabase.auth.getUser(auth?.value);
 
   const { data, error } = await supabase
     .from("tbl_site")
-    .select("*")
-    .eq("user_id", user.data.user?.id)
-    .eq("is_exist", true)
-    .or(
-      `site_name.ilike.%${search}%,site_link.ilike.%${search}%,description.ilike.%${search}%,site_id_text.ilike.%${search}%`
+    .select(
+      "site_id, site_name, site_link, description,auto_payment,created_at,updated_at,is_exist"
     )
-    .order("created_at", { ascending: false })
-    .range(
-      (parseInt(page) - 1) * parseInt(limit),
-      parseInt(page) * parseInt(limit) - 1
-    );
-
+    .eq("site_id", site_id)
+    .eq("user_id", user.data.user?.id);
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
-  return NextResponse.json(data, {
-    status: 200,
-  });
+  return NextResponse.json(data, { status: 200 });
 }

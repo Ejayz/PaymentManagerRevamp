@@ -1,33 +1,25 @@
+import { NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 const PROJECT_URL = process.env.PROJECT_URL || "";
 const ANON_PUBLIC = process.env.ANON_PUBLIC || "";
 
 export async function GET(req: NextRequest) {
-  const page = req.nextUrl.searchParams.get("page") || "0";
-  const limit = req.nextUrl.searchParams.get("limit") || "10";
-  const search = req.nextUrl.searchParams.get("search");
-
+  const token_id = req.nextUrl.searchParams.get("token_id") || "0";
   const supabase = createClient(PROJECT_URL, ANON_PUBLIC);
-
   const auth = cookies().get("auth");
   const user = await supabase.auth.getUser(auth?.value);
-
   const { data, error } = await supabase
-    .from("tbl_site")
+    .from("tbl_token")
     .select("*")
     .eq("user_id", user.data.user?.id)
     .eq("is_exist", true)
-    .or(
-      `site_name.ilike.%${search}%,site_link.ilike.%${search}%,description.ilike.%${search}%,site_id_text.ilike.%${search}%`
-    )
-    .order("created_at", { ascending: false })
-    .range(
-      (parseInt(page) - 1) * parseInt(limit),
-      parseInt(page) * parseInt(limit) - 1
-    );
+    .eq("id", token_id);
+
+console.log(error)
+
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });

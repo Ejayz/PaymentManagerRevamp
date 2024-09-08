@@ -20,9 +20,8 @@ import {
   useRef,
   useState,
 } from "react";
-import toast from "react-hot-toast";
-import * as Yup from "yup";
-export default function SiteList() {
+
+export default function TokenList() {
   const [page, setPage] = useState(1);
   const searchInput = useRef<HTMLInputElement>(null);
   const [limit, setLimit] = useState(10);
@@ -32,7 +31,7 @@ export default function SiteList() {
     queryKey: ["site_list", page, search, limit],
     queryFn: async () => {
       const response = await fetch(
-        `/api/v1/ops/getsitelist?page=${page}&search=${search}&limit=${limit}`,
+        `/api/v1/ops/gettokenlist?page=${page}&search=${search}&limit=${limit}`,
         {
           method: "GET",
           headers: {
@@ -75,8 +74,11 @@ export default function SiteList() {
             </button>
           </label>
 
-          <Link href="/dashboard/sites/new" className="btn btn-primary btn-outline">
-            Add Site
+          <Link
+            href="/dashboard/tokens/new"
+            className="btn btn-primary btn-outline"
+          >
+            Add Token
           </Link>
         </div>
 
@@ -84,11 +86,8 @@ export default function SiteList() {
           <thead>
             <tr className="">
               <th></th>
-              <th>SITE_ID</th>
-              <th>SITE NAME</th>
-              <th>SITE LINK</th>
-              <th>DESCRIPTION</th>
-              <th>AUTO PAYMENT</th>
+              <th>CURRENCY NAME</th>
+              <th>CURRENCY CODE</th>
               <th>OPTIONS</th>
             </tr>
           </thead>
@@ -106,32 +105,18 @@ export default function SiteList() {
                 </td>
               </tr>
             ) : data.length > 0 ? (
-              data?.map((site: any, index: any) => (
+              data?.map((token: any, index: any) => (
                 <tr key={index}>
                   <th>{index + 1}</th>
-                  <td>{site.site_id}</td>
-                  <td>{site.site_name}</td>
-                  <td>
-                    <Link className="link" href={site.site_link}>
-                      {site.site_link}
-                    </Link>
-                  </td>
-                  <td>{site.description}</td>
-                  <td>
-                    <div
-                      className={`badge  badge-outline ${
-                        site.auto_payment ? "badge-success" : "badge-error"
-                      }`}
-                    >
-                      {site.auto_payment ? "Enabled" : "Disabled"}
-                    </div>
-                  </td>
+                  <td>{token.currency_name}</td>
+                  <td>{token.currency_code}</td>
+
                   <td className="justify-center items-center flex gap-4">
                     <Link
-                      href={`/dashboard/sites/edit/${site.site_id}`}
+                      href={`/dashboard/tokens/edit/${token.id}`}
                       className="flex flex-row gap-x-2 link"
                     >
-                       <Pencil className="text-warning"/> Edit
+                      <Pencil className="text-warning" /> Edit
                     </Link>
                   </td>
                 </tr>

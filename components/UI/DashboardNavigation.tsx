@@ -18,9 +18,13 @@ export default function DashboardNavigation({
       className={`${cssStyle} flex min-h-screen   justify-between  bg-base-200`}
     >
       <QueryClientProvider client={queryClient}>
-        <Toaster position="bottom-right" toastOptions={{
-          duration: 5000,
-        }} reverseOrder={false} />
+        <Toaster
+          position="bottom-right"
+          toastOptions={{
+            duration: 5000,
+          }}
+          reverseOrder={false}
+        />
         <div className="drawer">
           <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
           <div className="drawer-content flex flex-col">
@@ -60,12 +64,7 @@ export default function DashboardNavigation({
                     <Link href={"/dashboard/tokens"}>TOKENS</Link>
                   </li>
                   <li>
-                    <Link href={"/dashboard/manual_payments"}>
-                      MANUAL PAYMENTS
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href={"/dashboard/auto_payments"}>AUTO PAYMENTS</Link>
+                    <Link href={"/dashboard/transactions"}>TRANSACTIONS</Link>
                   </li>
                   <li>
                     <Link href={"/dashboard/settings"}>SETTINGS</Link>
@@ -91,28 +90,23 @@ export default function DashboardNavigation({
             <ul className="menu bg-base-200 min-h-full w-80 p-4">
               {/* Sidebar content here */}
               <li>
-                    <Link href={"/dashboard/sites"}>SITES</Link>
-                  </li>
-                  <li>
-                    <Link href={"/dashboard/tokens"}>TOKENS</Link>
-                  </li>
-                  <li>
-                    <Link href={"/dashboard/manual_payments"}>
-                      MANUAL PAYMENTS
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href={"/dashboard/auto_payments"}>AUTO PAYMENTS</Link>
-                  </li>
-                  <li>
-                    <Link href={"/dashboard/settings"}>SETTINGS</Link>
-                  </li>
-                  <li>
-                    <Link href={"/dashboard/settings"}>REPORTS</Link>
-                  </li>
-                  <li>
-                    <Link href={"/dashboard/logout"}>LOGOUT</Link>
-                  </li>
+                <Link href={"/dashboard/sites"}>SITES</Link>
+              </li>
+              <li>
+                <Link href={"/dashboard/tokens"}>TOKENS</Link>
+              </li>
+              <li>
+                <Link href={"/dashboard/transactions"}>TRANSACTIONS</Link>
+              </li>
+              <li>
+                <Link href={"/dashboard/settings"}>SETTINGS</Link>
+              </li>
+              <li>
+                <Link href={"/dashboard/settings"}>REPORTS</Link>
+              </li>
+              <li>
+                <Link href={"/dashboard/logout"}>LOGOUT</Link>
+              </li>
             </ul>
           </div>
         </div>

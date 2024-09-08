@@ -1,7 +1,8 @@
 "use client";
 
+import { useMutation } from "@tanstack/react-query";
 import { Field, Form, Formik } from "formik";
-import { CircleCheckBig, CircleHelp, TriangleAlert } from "lucide-react";
+import { CircleCheckBig, CircleHelp, Plus, TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -19,15 +20,41 @@ export default function NewSiteForm() {
     auto_payment: Yup.string(),
   });
 
+  const mutateNewSite = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await fetch("/api/v1/ops/createsite", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      return response.json();
+    },
+    onError: (error) => {
+      toast.error("Failed to add site");
+    },
+    onSuccess: (data) => {
+      toast.success("Site Added Successfully");
+      navigator.push("/dashboard/sites");
+    },
+    onMutate: (data) => {
+      return data;
+    },
+  });
+
   return (
     <div className="flex flex-col w-11/12 mx-auto ">
       <div className="breadcrumbs my-12 text-xl font-bold">
         <ul>
           <li>
-            <a>Sites</a>
+            <Link href="/dashboard">Dashboard</Link>
           </li>
           <li>
-            <a>New</a>
+            <Link href="/sites">Sites</Link>
+          </li>
+          <li>
+            <Link href="/sites/new">New Site</Link>
           </li>
         </ul>
       </div>
@@ -41,33 +68,13 @@ export default function NewSiteForm() {
         }}
         validationSchema={Add_Site_Validator}
         onSubmit={async (e, actions) => {
-          let headersList = {
-            Accept: "*/*",
-            "User-Agent": "Thunder Client (https://www.thunderclient.com)",
-            "Content-Type": "application/json",
-          };
-
-          let bodyContent = JSON.stringify({
+          mutateNewSite.mutate({
             site_name: e.site_name,
             site_link: e.site_link,
             description: e.description,
             faucetpay_api_key: e.faucetpay_api_key,
-            auto_payment: e.auto_payment == "true" ? true : false,
+            auto_payment: e.auto_payment,
           });
-
-          let response = await fetch("/api/v1/ops/createsite", {
-            method: "POST",
-            body: bodyContent,
-            headers: headersList,
-          });
-
-          let data = await response.text();
-          if (response.ok) {
-            toast.success("Site Added Successfully");
-            navigator.push("/dashboard/sites");
-          } else {
-            toast.error("Failed to add site");
-          }
         }}
       >
         {({ errors, touched, values }) => (
@@ -308,7 +315,23 @@ export default function NewSiteForm() {
               </div>
             </div>
             <div className="modal-action p-6">
-              <button className="btn btn-primary btn-md">Save Site</button>
+              <button
+                type="submit"
+                className={`btn btn-outline ${
+                  mutateNewSite.isPending ? "btn-disabled" : "btn-primary"
+                } btn-md`}
+              >
+                {mutateNewSite.isPending ? (
+                  <>
+                    <span className="loading loading-dots loading-sm"></span>{" "}
+                    Adding Site...
+                  </>
+                ) : (
+                  <>
+                    <Plus /> Add Site
+                  </>
+                )}
+              </button>
               <Link className="btn btn-ghost btn-md " href="/dashboard/sites">
                 BACK
               </Link>

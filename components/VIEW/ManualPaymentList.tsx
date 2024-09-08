@@ -2,27 +2,11 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { Field, Form, Formik, FormikHelpers } from "formik";
-import {
-  CircleHelp,
-  Pencil,
-  Search,
-  Settings2,
-  Trash2,
-  TriangleAlert,
-  View,
-} from "lucide-react";
+import { Pencil, Search } from "lucide-react";
 import Link from "next/link";
-import {
-  DetailedHTMLProps,
-  InputHTMLAttributes,
-  LegacyRef,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import toast from "react-hot-toast";
-import * as Yup from "yup";
-export default function SiteList() {
+import { useRef, useState } from "react";
+
+export default function ManualPaymentList() {
   const [page, setPage] = useState(1);
   const searchInput = useRef<HTMLInputElement>(null);
   const [limit, setLimit] = useState(10);
@@ -57,26 +41,51 @@ export default function SiteList() {
     <div className="overflow-x-auto mt-4 w-11/12 mx-auto">
       <div className="w-11/12 flex flex-col mx-auto gap-y-12 h-full">
         <div className="w-full flex flex-row  justify-between items-center">
-          <label className="input pr-0 input-bordered flex flex-row justify-center items-center">
-            <input
-              type="text"
-              ref={searchInput}
-              className="grow w-full"
-              placeholder="Search"
-            />
-            <button
-              onClick={() => {
-                setSearch(searchInput.current?.value || "");
-                setPage(1);
-              }}
-              className="btn btn-sm h-full drop-shadow-2xl flex items-center gap-2"
-            >
-              <Search color="#000000" /> Search
-            </button>
-          </label>
+          <div className="flex flex-row w-full gap-x-6">
+            <label className="input pr-0 input-bordered flex flex-row justify-center items-center">
+              <input
+                type="text"
+                ref={searchInput}
+                className="grow w-full"
+                placeholder="Search"
+              />
+              <button
+                onClick={() => {
+                  setSearch(searchInput.current?.value || "");
+                  setPage(1);
+                }}
+                className="btn btn-sm h-full drop-shadow-2xl flex items-center gap-2"
+              >
+                <Search color="#000000" /> Search
+              </button>
+            </label>
 
-          <Link href="/dashboard/sites/new" className="btn btn-primary btn-outline">
-            Add Site
+            <select onChange={
+              (e) => {
+                alert(e.target.value)
+              }
+            } className="select select-bordered w-full max-w-xs">
+              <option disabled selected>
+                SITE
+              </option>
+              <option>Han Solo</option>
+              <option>Greedo</option>
+            </select>
+
+            <select className="select select-bordered w-full max-w-xs">
+              <option disabled selected>
+                STATUS
+              </option>
+              <option>All</option>
+              <option>Pending</option>
+              <option>Sent</option>
+            </select>
+          </div>
+          <Link
+            href="/dashboard/sites/new"
+            className="btn btn-primary btn-outline"
+          >
+            Add Transaction
           </Link>
         </div>
 
@@ -84,12 +93,13 @@ export default function SiteList() {
           <thead>
             <tr className="">
               <th></th>
-              <th>SITE_ID</th>
-              <th>SITE NAME</th>
-              <th>SITE LINK</th>
-              <th>DESCRIPTION</th>
-              <th>AUTO PAYMENT</th>
-              <th>OPTIONS</th>
+              <th>ID</th>
+              <th>CURRENCY</th>
+              <th>USER</th>
+              <th>SITE ID</th>
+              <th>TYPE</th>
+              <th>STATUS</th>
+              <th>ACTION</th>
             </tr>
           </thead>
           <tbody>
@@ -131,7 +141,7 @@ export default function SiteList() {
                       href={`/dashboard/sites/edit/${site.site_id}`}
                       className="flex flex-row gap-x-2 link"
                     >
-                       <Pencil className="text-warning"/> Edit
+                      <Pencil className="text-warning" /> Edit
                     </Link>
                   </td>
                 </tr>
