@@ -12,22 +12,20 @@ export async function updateSession(request: NextRequest) {
   const supabase = createServerClient(PROJECT_URL, ANON_PUBLIC, {
     cookies: {
       getAll() {
-        return request.cookies.getAll();
+        return request.cookies.getAll()
       },
       setAll(cookiesToSet) {
-        try {
-          cookiesToSet.forEach(({ name, value, options }) =>
-            cookieStore.set(name, value, {
-              ...options,
-              maxAge: 3600,
-            })
-          );
-        } catch {
-          // The `setAll` method was called from a Server Component.
-          // This can be ignored if you have middleware refreshing
-          // user sessions.
-        }
-      }
+        cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
+        supabaseResponse = NextResponse.next({
+          request,
+        })
+        cookiesToSet.forEach(({ name, value, options }) =>
+          supabaseResponse.cookies.set(name, value, {
+            ...options,
+            maxAge: 3600,
+          })
+        )
+      },
     },
   });
 
@@ -49,7 +47,10 @@ export async function updateSession(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
-  } else if (!data.user && request.nextUrl.pathname.startsWith("/api/external")) {
+  } else if (
+    !data.user &&
+    request.nextUrl.pathname.startsWith("/api/external")
+  ) {
     return supabaseResponse;
   }
 
