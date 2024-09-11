@@ -15,17 +15,19 @@ export async function updateSession(request: NextRequest) {
         return request.cookies.getAll();
       },
       setAll(cookiesToSet) {
-    
-        cookiesToSet.forEach(({ name, value, options }) => {
-  
-          if (!request.cookies.get(name)) {
-            supabaseResponse.cookies.set(name, value, {
+        try {
+          cookiesToSet.forEach(({ name, value, options }) =>
+            cookieStore.set(name, value, {
               ...options,
-              maxAge: 3600
-            });
-          }
-        });
-      },
+              maxAge: 3600,
+            })
+          );
+        } catch {
+          // The `setAll` method was called from a Server Component.
+          // This can be ignored if you have middleware refreshing
+          // user sessions.
+        }
+      }
     },
   });
 
