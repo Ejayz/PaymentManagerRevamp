@@ -15,17 +15,13 @@ export async function updateSession(request: NextRequest) {
         return request.cookies.getAll();
       },
       setAll(cookiesToSet) {
-        const oneHourInSeconds = 3600;
+    
         cookiesToSet.forEach(({ name, value, options }) => {
-          // Create an expiration date for 1 hour from now
-          const expires = new Date(Date.now() + oneHourInSeconds * 1000).toUTCString();
-
-          // Only set the cookie if it is not already present
+  
           if (!request.cookies.get(name)) {
             supabaseResponse.cookies.set(name, value, {
               ...options,
-              expires:expires,
-              maxAge: oneHourInSeconds,
+              maxAge: 3600
             });
           }
         });
