@@ -58,6 +58,9 @@ export default function DashboardNavigation({
                 <ul className="menu menu-horizontal">
                   {/* Navbar menu content here */}
                   <li>
+                    <Link href={"/dashboard"}>DASHBOARD</Link>
+                  </li>
+                  <li>
                     <Link href={"/dashboard/sites"}>SITES</Link>
                   </li>
                   <li>
@@ -69,11 +72,9 @@ export default function DashboardNavigation({
                   <li>
                     <Link href={"/dashboard/settings"}>SETTINGS</Link>
                   </li>
+
                   <li>
-                    <Link href={"/dashboard/settings"}>REPORTS</Link>
-                  </li>
-                  <li>
-                    <Link href={"/dashboard/logout"}>LOGOUT</Link>
+                    <Link href={"/api/auth/logout"}>LOGOUT</Link>
                   </li>
                 </ul>
               </div>
@@ -90,6 +91,9 @@ export default function DashboardNavigation({
             <ul className="menu bg-base-200 min-h-full w-80 p-4">
               {/* Sidebar content here */}
               <li>
+                <Link href={"/dashboard"}>DASHBOARD</Link>
+              </li>
+              <li>
                 <Link href={"/dashboard/sites"}>SITES</Link>
               </li>
               <li>
@@ -102,10 +106,7 @@ export default function DashboardNavigation({
                 <Link href={"/dashboard/settings"}>SETTINGS</Link>
               </li>
               <li>
-                <Link href={"/dashboard/settings"}>REPORTS</Link>
-              </li>
-              <li>
-                <Link href={"/dashboard/logout"}>LOGOUT</Link>
+                <Link href={"/api/auth/logout"}>LOGOUT</Link>
               </li>
             </ul>
           </div>

@@ -1,8 +1,8 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Field, Form, Formik, FormikHelpers } from "formik";
-import { Pencil, Search } from "lucide-react";
+import { Pencil, Search, View } from "lucide-react";
 import Link from "next/link";
 import { useRef, useState } from "react";
 
@@ -11,12 +11,14 @@ export default function ManualPaymentList() {
   const searchInput = useRef<HTMLInputElement>(null);
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState("");
-
+  const [site, setSite] = useState("all");
+  const [status, setStatus] = useState("all");
+  
   const { data, error, isFetching, isLoading, refetch, isError } = useQuery({
-    queryKey: ["site_list", page, search, limit],
+    queryKey: ["transaction_list", page, search, limit, site, status],
     queryFn: async () => {
       const response = await fetch(
-        `/api/v1/ops/getsitelist?page=${page}&search=${search}&limit=${limit}`,
+        `/api/v1/ops/gettransactionlist?page=${page}&search=${search}&limit=${limit}&site=${site}&status=${status}`,
         {
           method: "GET",
           headers: {
@@ -26,6 +28,33 @@ export default function ManualPaymentList() {
           redirect: "follow",
         }
       );
+      const result = await response.json();
+
+      if (response.ok) {
+        return result;
+      } else {
+        throw new Error("Something went wrong while fetching site list.");
+      }
+    },
+    retry: 1,
+  });
+
+  const {
+    data: siteData,
+    error: siteError,
+    isFetching: siteFetching,
+    isLoading: siteLoading,
+  } = useQuery({
+    queryKey: ["site_list"],
+    queryFn: async () => {
+      const response = await fetch(`/api/v1/ops/getsitelistoption`, {
+        method: "GET",
+        headers: {
+          Accept: "*/*",
+          "User-Agent": "Thunder Client (https://www.thunderclient.com)",
+        },
+        redirect: "follow",
+      });
       const result = await response.json();
 
       if (response.ok) {
@@ -60,43 +89,66 @@ export default function ManualPaymentList() {
               </button>
             </label>
 
-            <select onChange={
-              (e) => {
-                alert(e.target.value)
-              }
-            } className="select select-bordered w-full max-w-xs">
-              <option disabled selected>
-                SITE
-              </option>
-              <option>Han Solo</option>
-              <option>Greedo</option>
+            <select
+              onChange={(e) => {
+                setSite(e.target.value);
+                setPage(1);
+              }}
+              value={site}
+              className="select select-bordered w-full max-w-xs"
+            >
+              <option disabled>SITE</option>
+              <option value="all">All Sites</option>
+              {siteFetching || siteLoading ? (
+                <option>Loading...</option>
+              ) : siteError ? (
+                <option>Error</option>
+              ) : (
+                siteData?.map((site: any, index: any) => (
+                  <option
+                    className="flex flex-row "
+                    key={index}
+                    value={site.site_id}
+                  >
+                    {site.site_name}
+                  </option>
+                ))
+              )}
             </select>
 
-            <select className="select select-bordered w-full max-w-xs">
-              <option disabled selected>
-                STATUS
-              </option>
-              <option>All</option>
-              <option>Pending</option>
-              <option>Sent</option>
+            <select
+              onChange={(e) => {
+                setStatus(e.target.value);
+                setPage(1);
+              }}
+              value={status}
+              className="select select-bordered w-full max-w-xs"
+            >
+              <option disabled>STATUS</option>
+              <option value="all">All Status</option>
+              <option value="Pending">Pending</option>
+              <option value="Sent">Sent</option>
+              <option value="Declined">Declined</option>
             </select>
           </div>
           <Link
-            href="/dashboard/sites/new"
+            href="/dashboard/transactions/new"
             className="btn btn-primary btn-outline"
           >
             Add Transaction
           </Link>
         </div>
 
-        <table className="table text-center">
+        <table className="table table-xs text-center">
           <thead>
             <tr className="">
               <th></th>
-              <th>ID</th>
+              <th>TRANSACTION ID</th>
               <th>CURRENCY</th>
-              <th>USER</th>
+              <th>TO USER</th>
               <th>SITE ID</th>
+              <th>SITE NAME</th>
+              <th>AMOUNT</th>
               <th>TYPE</th>
               <th>STATUS</th>
               <th>ACTION</th>
@@ -105,51 +157,70 @@ export default function ManualPaymentList() {
           <tbody>
             {isLoading || isFetching ? (
               <tr>
-                <td colSpan={7}>
+                <td colSpan={10}>
                   <span className="loading loading-dots loading-md"></span>
                 </td>
               </tr>
             ) : isError ? (
               <tr>
-                <td className="text-error font-bold" colSpan={7}>
+                <td className="text-error font-bold" colSpan={10}>
                   Something went wrong while fetching site list.
                 </td>
               </tr>
             ) : data.length > 0 ? (
-              data?.map((site: any, index: any) => (
+              data?.map((transaction: any, index: any) => (
                 <tr key={index}>
                   <th>{index + 1}</th>
-                  <td>{site.site_id}</td>
-                  <td>{site.site_name}</td>
-                  <td>
-                    <Link className="link" href={site.site_link}>
-                      {site.site_link}
-                    </Link>
+                  <td className="text-ellipsis text-wrap">
+                    {transaction.transaction_id}
                   </td>
-                  <td>{site.description}</td>
+                  <td>{transaction.tbl_token.currency_code}</td>
+                  <td>{transaction.to_user}</td>
+                  <td>{transaction.tbl_site.site_id}</td>
+                  <td>{transaction.tbl_site.site_name}</td>
+                  <td>{transaction.amount} Satoshi</td>
+                  <td>{transaction.type == "auto" ? "Automatic" : "Manual"}</td>
                   <td>
                     <div
                       className={`badge  badge-outline ${
-                        site.auto_payment ? "badge-success" : "badge-error"
+                        transaction.status == "Sent"
+                          ? "badge-success"
+                          : transaction.status == "Pending"
+                          ? "badge-warning"
+                          : transaction.status == "Declined"
+                          ? "badge-error"
+                          : ""
                       }`}
                     >
-                      {site.auto_payment ? "Enabled" : "Disabled"}
+                      {transaction.status}
                     </div>
                   </td>
                   <td className="justify-center items-center flex gap-4">
-                    <Link
-                      href={`/dashboard/sites/edit/${site.site_id}`}
-                      className="flex flex-row gap-x-2 link"
-                    >
-                      <Pencil className="text-warning" /> Edit
-                    </Link>
+                    {transaction.status == "Pending" ? (
+                      <Link
+                        href={`/dashboard/transactions/edit/${transaction.transaction_id}`}
+                      >
+                        <button className="btn btn-sm btn-warning btn-outline">
+                          <Pencil size={16} className="text-warning" />
+                        </button>
+                      </Link>
+                    ) : transaction.status == "Sent" ||
+                      transaction.status == "Declined" ? (
+                      <Link
+                        href={`/dashboard/transactions/view/${transaction.transaction_id}`}
+                      >
+                        <button className="btn btn-sm btn-info btn-outline disabled">
+                          <View size={16} className="text-info" />
+                        </button>
+                      </Link>
+                    ) : null}
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td className="font-bold" colSpan={7}>
-                  NO DATA FOUND.
+                <td className="font-bold" colSpan={10}>
+                  No transaction found.
                 </td>
               </tr>
             )}

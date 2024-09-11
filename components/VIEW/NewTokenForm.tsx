@@ -1,7 +1,7 @@
 "use client";
 import { Formik, Form } from "formik";
 import FormBased from "../UI/FormBased";
-import FormInput from "../UI/FormInput";
+import {FormInput} from "../UI/FormInput";
 import * as Yup from "yup";
 import Link from "next/link";
 import { useMutation } from "@tanstack/react-query";

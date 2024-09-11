@@ -1,19 +1,14 @@
+import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-import { cookies } from "next/headers";
-import { NextRequest } from "next/server";
 
-const PROJECT_URL = process.env.PROJECT_URL || "";
-const ANON_PUBLIC = process.env.ANON_PUBLIC || "";
+import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
   const page = (await req.nextUrl.searchParams.get("page")) || "1";
   const search = (await req.nextUrl.searchParams.get("search")) || "";
   const limit = (await req.nextUrl.searchParams.get("limit")) || "10";
-  console.log(page, search, limit);
-  const supabase = createClient(PROJECT_URL, ANON_PUBLIC);
-  const auth = cookies().get("auth");
-  const user = await supabase.auth.getUser(auth?.value);
+  const supabase = createClient();
+  const user = await supabase.auth.getUser();
   const data = await supabase
     .from("tbl_token")
     .select("*")
@@ -26,7 +21,7 @@ export async function GET(req: NextRequest) {
     )
     .order("created_at", { ascending: false });
 
-    console.log(data);
+  console.log(data);
 
   if (data.error) {
     return NextResponse.json(data, { status: 400 });

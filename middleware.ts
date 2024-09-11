@@ -1,27 +1,44 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
+import { createClient } from "./utils/supabase/server";
 
 const SUPABASE_URL = process.env.PROJECT_URL || "";
 const SUPABASE_KEY = process.env.ANON_PUBLIC || "";
 
 export default async function RoutesMiddleWare(request: NextRequest) {
-  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-  const auth= cookies().get("auth");
-  
+  const auth = cookies().get("auth");
+  const supabase = createClient();
   const user = await supabase.auth.getUser(auth?.value);
 
-
   if (request.nextUrl.pathname.includes("/dashboard") && !user.data.user) {
-    return NextResponse.redirect(new URL("/login",request.url));
-  } else if (request.nextUrl.pathname.includes("/api/v1/ops/") && !user.data.user) {
-    return NextResponse.redirect(new URL("/login",request.url));
-  }else{
+    return NextResponse.redirect(new URL("/login", request.url));
+  } else if (
+    request.nextUrl.pathname.includes("/api/v1/ops/") &&
+    !user.data.user
+  ) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  } else {
     return NextResponse.next();
   }
-  
 }
-// Configuration object for matcher
+
+
+// import { type NextRequest } from "next/server";
+// import { updateSession } from "@/utils/supabase/middleware";
+
+// export async function middleware(request: NextRequest) {
+//   return await updateSession(request);
+// }
+
 export const config = {
-  matcher: "/:path*",
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * Feel free to modify this pattern to include more paths.
+     */
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+  ],
 };

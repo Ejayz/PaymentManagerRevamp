@@ -1,18 +1,14 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
-const PROJECT_URL = process.env.PROJECT_URL || "";
-const ANON_PUBLIC = process.env.ANON_PUBLIC || "";
 
 export async function GET(req: NextRequest) {
-  const supabase = createClient(PROJECT_URL, ANON_PUBLIC);
+const supabase = createClient();
 
   const site_id = req.nextUrl.searchParams.get("site_id");
 
-  const auth = cookies().get("auth");
-
-  const user = await supabase.auth.getUser(auth?.value);
+  const user= await supabase.auth.getUser();
 
   const { data, error } = await supabase
     .from("tbl_site")

@@ -4,7 +4,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { Form, Formik } from "formik";
 import { Save, Trash2 } from "lucide-react";
 import Link from "next/link";
-import FormInput from "../UI/FormInput";
+import {FormInput} from "../UI/FormInput";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import * as yup from "yup";

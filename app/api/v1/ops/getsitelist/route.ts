@@ -1,23 +1,17 @@
-import { createClient } from "@supabase/supabase-js";
-import { cookies } from "next/headers";
+import { createClient } from "@/utils/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
-
-const PROJECT_URL = process.env.PROJECT_URL || "";
-const ANON_PUBLIC = process.env.ANON_PUBLIC || "";
 
 export async function GET(req: NextRequest) {
   const page = req.nextUrl.searchParams.get("page") || "0";
   const limit = req.nextUrl.searchParams.get("limit") || "10";
   const search = req.nextUrl.searchParams.get("search");
 
-  const supabase = createClient(PROJECT_URL, ANON_PUBLIC);
-
-  const auth = cookies().get("auth");
-  const user = await supabase.auth.getUser(auth?.value);
+  const supabase = createClient();
+  const user = await supabase.auth.getUser();
 
   const { data, error } = await supabase
     .from("tbl_site")
-    .select("*")
+    .select("site_name,site_link,description,auto_payment,is_exist,site_id")
     .eq("user_id", user.data.user?.id)
     .eq("is_exist", true)
     .or(
@@ -28,7 +22,7 @@ export async function GET(req: NextRequest) {
       (parseInt(page) - 1) * parseInt(limit),
       parseInt(page) * parseInt(limit) - 1
     );
-
+  console.log(error);
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
