@@ -1,34 +1,34 @@
-// import { NextRequest, NextResponse } from "next/server";
-// import { cookies } from "next/headers";
-// import { createClient } from "./utils/supabase/server";
+import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { createClient } from "./utils/supabase/server";
 
-// const SUPABASE_URL = process.env.PROJECT_URL || "";
-// const SUPABASE_KEY = process.env.ANON_PUBLIC || "";
+const SUPABASE_URL = process.env.PROJECT_URL || "";
+const SUPABASE_KEY = process.env.ANON_PUBLIC || "";
 
-// export default async function RoutesMiddleWare(request: NextRequest) {
-//   const auth = cookies().get("auth");
-//   const supabase = createClient();
-//   const user = await supabase.auth.getUser(auth?.value);
+export default async function RoutesMiddleWare(request: NextRequest) {
+  const auth = cookies().get("auth");
+  const supabase = createClient();
+  const user = await supabase.auth.getUser(auth?.value);
 
-//   if (request.nextUrl.pathname.includes("/dashboard") && !user.data.user) {
-//     return NextResponse.redirect(new URL("/login", request.url));
-//   } else if (
-//     request.nextUrl.pathname.includes("/api/v1/ops/") &&
-//     !user.data.user
-//   ) {
-//     return NextResponse.redirect(new URL("/login", request.url));
-//   } else {
-//     return NextResponse.next();
-//   }
-// }
-
-
-import { type NextRequest } from "next/server";
-import { updateSession } from "@/utils/supabase/middleware";
-
-export async function middleware(request: NextRequest) {
-  return await updateSession(request);
+  if (request.nextUrl.pathname.includes("/dashboard") && !user.data.user) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  } else if (
+    request.nextUrl.pathname.includes("/api/v1/ops/") &&
+    !user.data.user
+  ) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  } else {
+    return NextResponse.next();
+  }
 }
+
+
+// import { type NextRequest } from "next/server";
+// import { updateSession } from "@/utils/supabase/middleware";
+
+// export async function middleware(request: NextRequest) {
+//   return await updateSession(request);
+// }
 
 export const config = {
   matcher: [
