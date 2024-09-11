@@ -74,7 +74,7 @@ export default function DashboardNavigation({
                   </li>
 
                   <li>
-                    <Link href={"/api/auth/logout"}>LOGOUT</Link>
+                    <a href={"/api/auth/logout"}>LOGOUT</a>
                   </li>
                 </ul>
               </div>
@@ -106,7 +106,7 @@ export default function DashboardNavigation({
                 <Link href={"/dashboard/settings"}>SETTINGS</Link>
               </li>
               <li>
-                <Link href={"/api/auth/logout"}>LOGOUT</Link>
+                <a href={"/api/auth/logout"}>LOGOUT</a>
               </li>
             </ul>
           </div>
