@@ -1,14 +1,8 @@
-import {
-  createClient,
-  SupabaseClient,
-  UserResponse,
-} from "@supabase/supabase-js";
+import { createClient } from "@/utils/supabase/server";
+import { SupabaseClient, UserResponse } from "@supabase/supabase-js";
 import { randomBytes } from "crypto";
-import { cookies } from "next/headers";
-import { NextRequest, NextResponse } from "next/server";
 
-const PROJECT_URL = process.env.PROJECT_URL || "";
-const ANON_PUBLIC = process.env.ANON_PUBLIC || "";
+import { NextRequest, NextResponse } from "next/server";
 
 // Define the type for a single site object
 interface Site {
@@ -63,9 +57,8 @@ export async function POST(req: NextRequest) {
     transaction_id,
   } = await req.json();
   console.log(site_id, currency_id, amount, refferal, wallet_address);
-  const supabase = createClient(PROJECT_URL, ANON_PUBLIC);
-  const auth = cookies().get("auth");
-  const user = await supabase.auth.getUser(auth?.value);
+  const supabase = createClient();
+  const user = await supabase.auth.getUser();
 
   const siteData = await getSite(supabase, user, site_id);
   const currencyData = await getCurrency(supabase, user, currency_id);
