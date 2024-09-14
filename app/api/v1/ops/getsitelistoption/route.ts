@@ -12,8 +12,7 @@ const user = await supabase.auth.getUser()
     .eq("user_id", user.data.user?.id)
     .eq("is_exist", true)
     .order("created_at", { ascending: false });
-console.log(error)
-console.log(data)
+
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }

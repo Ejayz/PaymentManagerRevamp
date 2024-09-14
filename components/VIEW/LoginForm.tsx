@@ -45,9 +45,7 @@ export default function LoginForm() {
             if (response.ok) {
               toast.success("Logged in successfully");
               toast.success("Redirecting...");
-              setTimeout(() => {
-                navigation.push("/dashboard");
-              }, 1000);
+              navigation.push("/dashboard");
             } else {
               toast.error(data.error);
             }

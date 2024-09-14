@@ -15,7 +15,6 @@ export async function GET(req: NextRequest) {
   let data;
 
   if (status == "all" && site != "all") {
-    console.log("status == all && site != all");
     data = await supabase
       .from("tbl_transaction")
       .select("*,tbl_token(*),tbl_site(site_name,site_link,description,auto_payment,is_exist,site_id)")
@@ -29,7 +28,6 @@ export async function GET(req: NextRequest) {
       )
       .order("created_at", { ascending: false });
   } else if (status != "all" && site == "all") {
-    console.log("status != all && site == all");
     data = await supabase
       .from("tbl_transaction")
       .select("*,tbl_token(*),tbl_site(site_name,site_link,description,auto_payment,is_exist,site_id)")
@@ -43,7 +41,6 @@ export async function GET(req: NextRequest) {
       )
       .order("created_at", { ascending: false });
   } else if (status != "all" && site != "all") {
-    console.log("status != all && site != all");
     data = await supabase
       .from("tbl_transaction")
       .select("*,tbl_token(*),tbl_site(site_name,site_link,description,auto_payment,is_exist,site_id)")
@@ -58,7 +55,6 @@ export async function GET(req: NextRequest) {
       )
       .order("created_at", { ascending: false });
   } else {
-    console.log("else");
     data = await supabase
       .from("tbl_transaction")
       .select("*,tbl_token(*),tbl_site(site_name,site_link,description,auto_payment,is_exist,site_id)")
@@ -71,7 +67,6 @@ export async function GET(req: NextRequest) {
       )
       .order("created_at", { ascending: false });
   }
-  console.log(data);
   if (data?.error) {
     return NextResponse.json(data, { status: 400 });
   }

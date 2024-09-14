@@ -2,6 +2,7 @@ import { createClient } from "@/utils/supabase/server";
 import { SupabaseClient, UserResponse } from "@supabase/supabase-js";
 import { callback } from "chart.js/helpers";
 import { randomBytes } from "crypto";
+import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { send } from "process";
 
@@ -12,6 +13,7 @@ export async function POST(req: NextRequest) {
     await req.json();
   const supabase = createClient();
 
+console.log(req.headers.get("referer"));
   const { data, error } = await supabase
     .from("tbl_site")
     .select()
@@ -30,7 +32,8 @@ export async function POST(req: NextRequest) {
       { status: 400 }
     );
   }
-  if (data[0].site_link != req.nextUrl.origin) {
+ 
+  if (data[0].site_link != req.headers.get("referer")) {
     return NextResponse.json(
       {
         error: "Invalid Origin Request.",
@@ -189,7 +192,7 @@ const createTransactionRecord = async (
       amount: parseFloat(amount.toString()),
       callback_url: callback_url,
     }).select();
-    console.log(data)
+
     let headersList = {
       "Accept": "*/*",
       "User-Agent": "Thunder Client (https://www.thunderclient.com)",
@@ -207,9 +210,6 @@ const createTransactionRecord = async (
        headers: headersList
      });
      
-
-     
-
   if (error) {
     return false;
   }
@@ -239,7 +239,7 @@ const createManualTransactionRecord = async (
       transaction_id: randomBytes(8).toString("hex"),
       is_exist: true,
       amount: parseFloat(amount.toString()),
-      callback: callback_url,
+      callback_url: callback_url,
     })
     .select();
   console.log("error:", error);

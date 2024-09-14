@@ -14,16 +14,10 @@ export async function POST(req: NextRequest) {
     password: password,
   });
 
-  supabase.auth.setSession({
-    access_token: data?.session?.access_token || "",
-    refresh_token: data?.session?.refresh_token || "",
-  });
-
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 401 });
   }
   return NextResponse.json(data, {
     status: 200,
-   
   });
 }

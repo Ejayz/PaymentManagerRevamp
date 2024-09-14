@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
         user_id: user?.data?.user?.id,
       },
     ]);
-    console.log(data);
+    
     if (data.error) {
       return NextResponse.json({ error: data.error.message }, { status: 400 });
     } else {

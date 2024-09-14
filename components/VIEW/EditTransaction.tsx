@@ -131,7 +131,6 @@ export default function NewTransaction({
       navs.push("/dashboard/transactions");
     },
   });
-  console.log(transactionData);
 
   const validationSchema = Yup.object().shape({
     wallet_address: Yup.string().required("Wallet address is required"),
@@ -200,11 +199,11 @@ export default function NewTransaction({
             {mutateRemoveTransaction.isPending ? (
               <>
                 <span className="loading loading-dots loading-sm"></span>
-                Removing...
+                Declining...
               </>
             ) : (
               <>
-                <Trash2 /> Remove Token
+                <Trash2 /> Decline Transaction
               </>
             )}
           </button>
