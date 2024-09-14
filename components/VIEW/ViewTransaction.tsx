@@ -131,7 +131,6 @@ export default function ViewTransaction({
       navs.push("/dashboard/transactions");
     },
   });
-  console.log(transactionData);
 
   const validationSchema = Yup.object().shape({
     wallet_address: Yup.string().required("Wallet address is required"),

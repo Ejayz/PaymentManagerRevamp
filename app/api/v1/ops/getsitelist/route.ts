@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
       (parseInt(page) - 1) * parseInt(limit),
       parseInt(page) * parseInt(limit) - 1
     );
-  console.log(error);
+ 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }

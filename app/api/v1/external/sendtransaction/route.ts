@@ -239,7 +239,7 @@ const createManualTransactionRecord = async (
       transaction_id: randomBytes(8).toString("hex"),
       is_exist: true,
       amount: parseFloat(amount.toString()),
-      callback: callback_url,
+      callback_url: callback_url,
     })
     .select();
   console.log("error:", error);

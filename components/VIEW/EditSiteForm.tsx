@@ -20,7 +20,6 @@ import { randomBytes } from "crypto";
 import { useState } from "react";
 
 export default function EditSiteForm(site_id: any) {
-  console.log(site_id);
   const navs = useRouter();
   const [api_key, setApiKey] = useState(randomBytes(32).toString("hex"));
   const { data, error, isFetching, isLoading, refetch, isError } = useQuery({
@@ -290,7 +289,7 @@ export default function EditSiteForm(site_id: any) {
             }}
             validationSchema={Add_Site_Validator}
             onSubmit={async (e, actions) => {
-              console.log(e);
+             
               mutateSite.mutate({
                 site_id: site_id.site_id,
                 site_name: e.site_name,

@@ -60,7 +60,7 @@ export default function EditTokenForm({ token_id }: { token_id: string }) {
       toast.error("Error updating token");
     },
     onMutate: (values) => {
-      console.log("onMutate", values);
+     
     },
     onSuccess: (data, variables, context) => {
       toast.success("Token updated successfully !");
@@ -88,7 +88,7 @@ export default function EditTokenForm({ token_id }: { token_id: string }) {
       toast.error("Error removing token");
     },
     onMutate: (values) => {
-      console.log("onMutate", values);
+ 
     },
     onSuccess: (data, variables, context) => {
       toast.success("Token removed successfully !");

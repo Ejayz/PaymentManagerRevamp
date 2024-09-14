@@ -36,7 +36,6 @@ export async function updateSession(request: NextRequest) {
   // issues with users being randomly logged out.
 
   const { data } = await supabase.auth.getUser();
-  console.log(data)
   if (
     !data.user &&
     !request.nextUrl.pathname.startsWith("/login") &&
