@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { SupabaseClient, UserResponse } from "@supabase/supabase-js";
+import { callback } from "chart.js/helpers";
 import { randomBytes } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { send } from "process";
@@ -7,9 +8,10 @@ import { send } from "process";
 export async function POST(req: NextRequest) {
   const api_key = req.nextUrl.searchParams.get("api_key") || "";
   const site_id = req.nextUrl.searchParams.get("site_id") || "";
-  const { amount, currency_code, refferal, wallet_address } = await req.json();
+  const { amount, currency_code, refferal, wallet_address, callback_url } =
+    await req.json();
   const supabase = createClient();
-  console.log(req.nextUrl);
+
   const { data, error } = await supabase
     .from("tbl_site")
     .select()
@@ -78,7 +80,8 @@ export async function POST(req: NextRequest) {
       amount,
       refferal,
       wallet_address,
-      faucetPay
+      faucetPay,
+      callback_url
     );
 
     if (!transactionRecord) {
@@ -103,7 +106,8 @@ export async function POST(req: NextRequest) {
       currencyData[0].id,
       amount,
       refferal,
-      wallet_address
+      wallet_address,
+      callback_url
     );
 
     if (!transactionRecord) {
@@ -163,7 +167,8 @@ const createTransactionRecord = async (
   amount: number,
   refferal: boolean,
   wallet_address: string,
-  faucetpay_data: any
+  faucetpay_data: any,
+  callback_url: string
 ) => {
   const { data, error } = await supabase
     .from("tbl_transaction")
@@ -182,10 +187,29 @@ const createTransactionRecord = async (
       transaction_id: randomBytes(8).toString("hex"),
       is_exist: true,
       amount: parseFloat(amount.toString()),
-    })
-    .select();
-  console.log("error:", error);
-  console.log(data);
+      callback_url: callback_url,
+    }).select();
+    console.log(data)
+    let headersList = {
+      "Accept": "*/*",
+      "User-Agent": "Thunder Client (https://www.thunderclient.com)",
+      "Content-Type": "application/json"
+     }
+     if(!data||data.length == 0){
+        return false;
+      }
+
+     let bodyContent = JSON.stringify(data[0]);
+     
+     let response = await fetch(callback_url, { 
+       method: "POST",
+       body: bodyContent,
+       headers: headersList
+     });
+     
+
+     
+
   if (error) {
     return false;
   }
@@ -199,7 +223,8 @@ const createManualTransactionRecord = async (
   currency_id: string,
   amount: number,
   refferal: boolean,
-  wallet_address: string
+  wallet_address: string,
+  callback_url: string
 ) => {
   const { data, error } = await supabase
     .from("tbl_transaction")
@@ -214,6 +239,7 @@ const createManualTransactionRecord = async (
       transaction_id: randomBytes(8).toString("hex"),
       is_exist: true,
       amount: parseFloat(amount.toString()),
+      callback: callback_url,
     })
     .select();
   console.log("error:", error);

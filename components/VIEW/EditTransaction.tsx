@@ -382,8 +382,7 @@ export default function NewTransaction({
                   >
                     {mutateUpdateTransaction.isPending ? (
                       <>
-                        <span className="loading loading-sm"></span> Adding
-                        Token...
+                        <span className="loading loading-sm"></span> Sending Transaction...
                       </>
                     ) : (
                       <>
