@@ -56,20 +56,27 @@ export async function POST(req: NextRequest) {
     wallet_address,
     transaction_id,
   } = await req.json();
-  console.log(site_id, currency_id, amount, refferal, wallet_address);
+
   const supabase = createClient();
   const user = await supabase.auth.getUser();
 
   const siteData = await getSite(supabase, user, site_id);
   const currencyData = await getCurrency(supabase, user, currency_id);
+  const transactionData = await getCallbackUrl(
+    supabase,
+    user,
+    site_id,
+    transaction_id
+  );
 
-  if (!siteData || !currencyData) {
+  if (!siteData || !currencyData || !transactionData) {
     return NextResponse.json({ error: "Error fetching data" }, { status: 400 });
   }
 
   const faucetpay_api_key = siteData[0].faucetpay_api_key;
   const currency_code = currencyData[0].currency_code;
-  console.log(faucetpay_api_key, currency_code);
+  const callback_url = transactionData[0].callback_url;
+
   let headersList = {
     Accept: "*/*",
     "User-Agent": "Thunder Client (https://www.thunderclient.com)",
@@ -102,7 +109,8 @@ export async function POST(req: NextRequest) {
     refferal,
     wallet_address,
     data,
-    transaction_id
+    transaction_id,
+    callback_url
   );
   console.log(transactionRecord);
 
@@ -127,7 +135,8 @@ const updateTransactionRecord = async (
   refferal: boolean,
   wallet_address: string,
   faucetpay_data: any,
-  transaction_id: string
+  transaction_id: string,
+  callback_url: string
 ) => {
   const { data, error } = await supabase
     .from("tbl_transaction")
@@ -145,12 +154,28 @@ const updateTransactionRecord = async (
       type: "Manual",
       transaction_id: randomBytes(8).toString("hex"),
       is_exist: true,
-      amount: parseFloat(amount.toString()),
+      amount: amount,
     })
     .eq("transaction_id", transaction_id)
     .select();
-  console.log("error:", error);
-  console.log(data);
+
+  let headersList = {
+    Accept: "*/*",
+    "User-Agent": "Thunder Client (https://www.thunderclient.com)",
+    "Content-Type": "application/json",
+  };
+  if (!data || data.length == 0) {
+    return false;
+  }
+
+  let bodyContent = JSON.stringify(data[0]);
+
+  let response = await fetch(callback_url, {
+    method: "POST",
+    body: bodyContent,
+    headers: headersList,
+  });
+
   if (error) {
     return false;
   }
@@ -170,7 +195,7 @@ const getCurrency = async (
     .eq("is_exist", true);
   console.log(error);
   if (error) {
-    return false;
+    return null;
   }
   return data;
 };
@@ -188,7 +213,27 @@ const getSite = async (
     .eq("is_exist", true);
   console.log(error);
   if (error) {
-    return false;
+    return null;
+  }
+  return data;
+};
+
+const getCallbackUrl = async (
+  supabase: SupabaseClient,
+  user: UserResponse,
+  site_id: string,
+  transaction_id: string
+) => {
+  const { data, error } = await supabase
+    .from("tbl_transaction")
+    .select("callback_url")
+    .eq("transaction_id", transaction_id)
+    .eq("site_id", site_id)
+    .eq("user_id", user.data.user?.id)
+    .eq("is_exist", true);
+  console.log(error);
+  if (error) {
+    return null;
   }
   return data;
 };

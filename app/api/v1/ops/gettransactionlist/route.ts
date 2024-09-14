@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
     console.log("status == all && site != all");
     data = await supabase
       .from("tbl_transaction")
-      .select("*,tbl_token(site_name,site_link,description,auto_payment,is_exist,site_id),tbl_site(*)")
+      .select("*,tbl_token(*),tbl_site(site_name,site_link,description,auto_payment,is_exist,site_id)")
       .or(`transaction_id.ilike.%${search}%,to_user.ilike.%${search}%`)
       .eq("user_id", user.data.user?.id)
       .eq("is_exist", true)
@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
     console.log("status != all && site == all");
     data = await supabase
       .from("tbl_transaction")
-      .select("*,tbl_token(site_name,site_link,description,auto_payment,is_exist,site_id),tbl_site(*)")
+      .select("*,tbl_token(*),tbl_site(site_name,site_link,description,auto_payment,is_exist,site_id)")
       .or(`transaction_id.ilike.%${search}%,to_user.ilike.%${search}%`)
       .eq("user_id", user.data.user?.id)
       .eq("is_exist", true)
@@ -46,7 +46,7 @@ export async function GET(req: NextRequest) {
     console.log("status != all && site != all");
     data = await supabase
       .from("tbl_transaction")
-      .select("*,tbl_token(site_name,site_link,description,auto_payment,is_exist,site_id),tbl_site(*)")
+      .select("*,tbl_token(*),tbl_site(site_name,site_link,description,auto_payment,is_exist,site_id)")
       .or(`transaction_id.ilike.%${search}%,to_user.ilike.%${search}%`)
       .eq("user_id", user.data.user?.id)
       .eq("is_exist", true)
