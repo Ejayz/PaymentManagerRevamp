@@ -30,6 +30,7 @@ export async function POST(req: NextRequest) {
     headers: headersList,
   });
   const status = response.json();
+  console.log(status)
 
   if (error) {
     return NextResponse.json(error, { status: 400 });
